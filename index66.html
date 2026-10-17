@@ -7,19 +7,23 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
     <style>
-        body { margin: 0; padding: 0; overflow: hidden; }
+        /* エラー時にわかりやすいよう背景は黒にしています */
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #000; }
         #panorama { width: 100vw; height: 100vh; }
     </style>
 </head>
 <body>
+
 <div id="panorama"></div>
+
 <script>
     pannellum.viewer('panorama', {
         "type": "equirectangular",
-        "panorama": "66.jpg",
+        "panorama": "./66.JPG", /* ← 拡張子を大文字で指定しています */
         "autoLoad": true,
         "compass": false
     });
 </script>
+
 </body>
 </html>
