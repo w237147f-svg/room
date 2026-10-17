@@ -18,36 +18,34 @@
 <script>
     pannellum.viewer('panorama', {
         "default": {
-            "firstScene": "scene_normal", // 最初に読み込むシーン
+            "firstScene": "scene_normal",
             "autoLoad": true,
             "compass": false
         },
         "scenes": {
-            // ▼ 1つ目のシーン（普段の部屋）
             "scene_normal": {
                 "type": "equirectangular",
-                "panorama": "66.jpg", // 元の画像ファイル名
+                "panorama": "66.jpg",
                 "hotSpots": [
                     {
-                        "pitch": -15,   // ホットスポットの上下位置（必要に応じて数値を調整）
-                        "yaw": 110,     // ホットスポットの左右位置（水道のある方向）
+                        "pitch": 0, // 真正面
+                        "yaw": 0,   // 真正面
                         "type": "scene",
                         "text": "水道を見る",
-                        "sceneId": "scene_water" // クリックで移動する先のID
+                        "sceneId": "scene_water"
                     }
                 ]
             },
-            // ▼ 2つ目のシーン（水が流れている部屋）
             "scene_water": {
                 "type": "equirectangular",
                 "panorama": "68_2.jpg", // 追加した水が流れる画像
                 "hotSpots": [
                     {
-                        "pitch": -10,
-                        "yaw": -150,
+                        "pitch": 0,
+                        "yaw": 0,
                         "type": "scene",
                         "text": "元の位置に戻る",
-                        "sceneId": "scene_normal" // クリックで最初のシーンに戻る
+                        "sceneId": "scene_normal"
                     }
                 ]
             }
