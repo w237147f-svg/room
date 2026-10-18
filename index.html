@@ -14,12 +14,12 @@
         .bulb-icon {
             width: 50px;
             height: 50px;
-            background-image: url('./bulb.png'); /* 画像ファイル名を bulb.png に指定 */
+            background-image: url('./bulb.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             cursor: pointer;
-            animation: bounce 2s infinite; /* ふわふわ動かすアニメーション */
+            animation: bounce 2s infinite;
         }
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
@@ -28,7 +28,7 @@
 
         /* ▼ クイズ画面のデザイン ▼ */
         #quiz-modal {
-            display: none; /* 初期状態は非表示 */
+            display: none;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -84,31 +84,57 @@
         <button class="quiz-btn" onclick="checkAnswer(3)">③ 洗濯の時に水道水ではなくお風呂の残り湯を利用する</button>
     </div>
 
-    <div id="quiz-result" style="display:none; margin-top:15px; font-size: 15px; line-height: 1.5;">
-        <!-- 正解・不正解の解説文領域 -->
-    </div>
+    <div id="quiz-result" style="display:none; margin-top:15px; font-size: 15px; line-height: 1.5;"></div>
     
     <button class="close-btn" onclick="closeQuiz()">閉じる</button>
 </div>
 
 <script>
-    // パノラマの設定
     pannellum.viewer('panorama', {
-        "type": "equirectangular",
-        "panorama": "68.jpg", // 水が流れている画像
-        "autoLoad": true,
-        "compass": false,
-        "hotSpots": [
-            {
-                "pitch": -10,  
-                "yaw": 200,    // 水道の位置（200）に設定
-                "cssClass": "bulb-icon", // 電球アイコン（bulb.png）を表示
-                "clickHandlerFunc": showQuiz // クリック時にクイズを表示
+        "default": {
+            "firstScene": "scene_normal",
+            "autoLoad": true,
+            "compass": false
+        },
+        "scenes": {
+            // シーン1：元の部屋（66.jpg）
+            "scene_normal": {
+                "type": "equirectangular",
+                "panorama": "66.jpg",
+                "hotSpots": [
+                    {
+                        "pitch": -10,
+                        "yaw": 200,   // 水道の位置
+                        "type": "scene",
+                        "text": "水道を見る",
+                        "sceneId": "scene_water"
+                    }
+                ]
+            },
+            // シーン2：水が流れている部屋（68.jpg）
+            "scene_water": {
+                "type": "equirectangular",
+                "panorama": "68.jpg",
+                "hotSpots": [
+                    {
+                        "pitch": -10,
+                        "yaw": 200,   // 電球アイコンの場所
+                        "cssClass": "bulb-icon",
+                        "clickHandlerFunc": showQuiz // クリックでクイズ開く
+                    },
+                    {
+                        "pitch": 0,
+                        "yaw": 0,
+                        "type": "scene",
+                        "text": "元の位置に戻る",
+                        "sceneId": "scene_normal"
+                    }
+                ]
             }
-        ]
+        }
     });
 
-    // ▼ クイズの動作プログラム ▼
+    // ▼ クイズ用関数 ▼
     function showQuiz(event, args) {
         document.getElementById("quiz-modal").style.display = "block";
         document.getElementById("quiz-choices").style.display = "block";
