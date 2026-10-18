@@ -76,13 +76,13 @@
 
 <!-- クイズのポップアップ画面 -->
 <div id="quiz-modal">
-    <h3>🌱 ゼミ室の脱炭素クイズ！</h3>
-    <p>ゼミ室での日常的な水分補給や水回り行動のうち、1回あたり（または1本あたり）の脱炭素効果（CO2削減量）が<b>最も大きい行動</b>はどれでしょう？</p>
+    <h3>💧 ゼミ室の水道エコアクションクイズ！</h3>
+    <p>ゼミ室で手洗いやコップ洗いをするとき、最も脱炭素（CO2削減）につながる適切な行動はどれでしょう？</p>
     
     <div id="quiz-choices">
-        <button class="quiz-btn" onclick="checkAnswer(1)">① 手洗いやコップ洗いの際、水を流しっぱなしにせずこまめに止める（30秒間）</button>
-        <button class="quiz-btn" onclick="checkAnswer(2)">② 500mlペットボトルを買わず、マイボトル（水筒）を持参して使用する</button>
-        <button class="quiz-btn" onclick="checkAnswer(3)">③ 500mlペットボトル4本を買う代わりに、2Lペットボトル1本を買って注いで飲む</button>
+        <button class="quiz-btn" onclick="checkAnswer(1)">① 水量を細く弱めにして、手洗増や洗い物の間もずっと流しっぱなしにする</button>
+        <button class="quiz-btn" onclick="checkAnswer(2)">② 石けんをつける間やスポンジでこする間（30秒間）はこまめに水を止める</button>
+        <button class="quiz-btn" onclick="checkAnswer(3)">③ 水量を強めにして、短時間で一気に流して終わらせる</button>
     </div>
 
     <div id="quiz-result" style="display:none; margin-top:15px; font-size: 14px; line-height: 1.6;"></div>
@@ -105,7 +105,7 @@
                 "hotSpots": [
                     {
                         "pitch": -10,
-                        "yaw": 200,   // 水道の位置
+                        "yaw": 200,   // 水道への移動スポット
                         "type": "scene",
                         "text": "水道を見る（流す）",
                         "sceneId": "scene_water"
@@ -118,8 +118,8 @@
                 "panorama": "68.jpg",
                 "hotSpots": [
                     {
-                        "pitch": -10,
-                        "yaw": 200,   // 電球アイコンの場所
+                        "pitch": -25,  // 下へ移動（-10 → -25）
+                        "yaw": 220,    // 右へ移動（200 → 220）
                         "cssClass": "bulb-icon",
                         "clickHandlerFunc": showQuiz // クリックでクイズ表示
                     },
@@ -147,10 +147,10 @@
         const resultDiv = document.getElementById("quiz-result");
         resultDiv.style.display = "block";
 
-        if(answer === 3) {
-            resultDiv.innerHTML = "<strong style='color:#d32f2f; font-size:18px;'>正解！⭕</strong><br><br><b>【解説】</b><br>正解は「③ 2Lペットボトル1本で購入する」です！<br><br>環境省のデコ活データベースによると、それぞれのCO2削減効果は以下の通りです：<br>・① 手洗い・コップ洗いの水止め：約 <b>0.002 kg-CO2e</b> / 回[cite: 1]<br>・② マイボトルの利用：約 <b>0.105 kg-CO2e</b> / 回[cite: 1]<br>・<b>③ 2Lボトル1本で購入：約 0.177 kg-CO2e / 本</b>[cite: 1]<br><br>ペットボトルは「容器の製造や輸送、リサイクル」に多くのエネルギーを使います。そのため、小さなボトルを何本も買うより、大きなボトル1本にまとめることでプラスチック使用量が減り、大きな脱炭素効果（約0.177kg-CO2e削減）が得られます！[cite: 1]";
+        if(answer === 2) {
+            resultDiv.innerHTML = "<strong style='color:#d32f2f; font-size:18px;'>正解！⭕</strong><br><br><b>【解説】</b><br>正解は「② こまめに水を止める」です！<br><br>手洗いやコップ洗いの際、30秒間水を止めるだけで1回あたり<b>約0.002 kg-CO2e</b>の温室効果ガス削減効果があります[cite: 1]。<br><br>水道水を送ったりきれいに処理したりする浄水場・下水処理場では、多くの電力やエネルギーが使われています。水量を弱くしても流しっぱなしにすると消費量が増えるため、使わない瞬間に「こまめに蛇口を止める」ことが最も効果的な脱炭素アクションです！[cite: 1]";
         } else {
-            resultDiv.innerHTML = "<strong style='color:#1976d2; font-size:18px;'>残念！❌</strong><br><br><b>【正解】</b><br>最も効果が高いのは<b>「③ 500mlペットボトル4本を買う代わりに、2Lペットボトル1本を買って注いで飲む」</b>です。<br><br><b>【解説】</b><br>環境省のデコ活データベースによると、それぞれのCO2削減効果は以下の通りです：<br>・① 手洗い・コップ洗いの水止め：約 <b>0.002 kg-CO2e</b> / 回[cite: 1]<br>・② マイボトルの利用：約 <b>0.105 kg-CO2e</b> / 回[cite: 1]<br>・<b>③ 2Lボトル1本で購入：約 0.177 kg-CO2e / 本</b>[cite: 1]<br><br>ペットボトルは「容器の製造や輸送、リサイクル」に多くのエネルギーを使います。そのため、小さなボトルを何本も買うより、大きなボトル1本にまとめることでプラスチック使用量が減り、大きな脱炭素効果（約0.177kg-CO2e削減）が得られます！[cite: 1]";
+            resultDiv.innerHTML = "<strong style='color:#1976d2; font-size:18px;'>残念！❌</strong><br><br><b>【正解】</b><br>正解は<b>「② 石けんをつける間やスポンジでこする間（30秒間）はこまめに水を止める」</b>です。<br><br><b>【解説】</b><br>手洗いやコップ洗いの際、30秒間水を止めるだけで1回あたり<b>約0.002 kg-CO2e</b>の温室効果ガス削減効果があります[cite: 1]。<br><br>水道水を送ったりきれいに処理したりする浄水場・下水処理場では、多くの電力やエネルギーが使われています。水量を弱くしても流しっぱなしにすると消費量が増えるため、使わない瞬間に「こまめに蛇口を止める」ことが最も効果的な脱炭素アクションです！[cite: 1]";
         }
     }
 
@@ -161,4 +161,3 @@
 
 </body>
 </html>
- 
