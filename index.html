@@ -3,54 +3,133 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>360度パノラマビューアー</title>
+    <title>360度パノラマ 脱炭素クイズ</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
     <style>
-        body { margin: 0; padding: 0; overflow: hidden; background-color: #000; }
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #000; font-family: sans-serif; }
         #panorama { width: 100vw; height: 100vh; }
+        
+        /* ▼ 電球アイコン（bulb.png）の設定 ▼ */
+        .bulb-icon {
+            width: 50px;
+            height: 50px;
+            background-image: url('./bulb.png'); /* 画像ファイル名を bulb.png に指定 */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+            animation: bounce 2s infinite; /* ふわふわ動かすアニメーション */
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ▼ クイズ画面のデザイン ▼ */
+        #quiz-modal {
+            display: none; /* 初期状態は非表示 */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            width: 85%;
+            max-width: 500px;
+        }
+        #quiz-modal h3 { margin-top: 0; color: #0277bd; }
+        .quiz-btn {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            background: #e1f5fe;
+            border: 2px solid #4fc3f7;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s;
+        }
+        .quiz-btn:hover { background: #b3e5fc; }
+        .close-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 15px;
+            background: #757575;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
+<!-- パノラマ表示エリア -->
 <div id="panorama"></div>
 
+<!-- クイズのポップアップ画面 -->
+<div id="quiz-modal">
+    <h3>💧 水道エコアクションクイズ！</h3>
+    <p>日常生活で水道を使う場面のうち、1回あたりの脱炭素効果（CO2排出削減量）が<b>最も大きい行動</b>はどれでしょう？</p>
+    
+    <div id="quiz-choices">
+        <button class="quiz-btn" onclick="checkAnswer(1)">① 手洗いの間（30秒間）水をこまめに止める</button>
+        <button class="quiz-btn" onclick="checkAnswer(2)">② 洗顔の間（30秒間）水をこまめに止める</button>
+        <button class="quiz-btn" onclick="checkAnswer(3)">③ 洗濯の時に水道水ではなくお風呂の残り湯を利用する</button>
+    </div>
+
+    <div id="quiz-result" style="display:none; margin-top:15px; font-size: 15px; line-height: 1.5;">
+        <!-- 正解・不正解の解説文領域 -->
+    </div>
+    
+    <button class="close-btn" onclick="closeQuiz()">閉じる</button>
+</div>
+
 <script>
+    // パノラマの設定
     pannellum.viewer('panorama', {
-        "default": {
-            "firstScene": "scene_normal",
-            "autoLoad": true,
-            "compass": false
-        },
-        "scenes": {
-            "scene_normal": {
-                "type": "equirectangular",
-                "panorama": "66.jpg",
-                "hotSpots": [
-                    {
-                        "pitch": -10, // 上下の角度（マイナスで少し下向き）
-                        "yaw": 200,   // 左右の角度（水道がある右側へ大きく調整）
-                        "type": "scene",
-                        "text": "水道を見る",
-                        "sceneId": "scene_water"
-                    }
-                ]
-            },
-            "scene_water": {
-                "type": "equirectangular",
-                "panorama": "68.jpg",
-                "hotSpots": [
-                    {
-                        "pitch": 0,
-                        "yaw": 0,
-                        "type": "scene",
-                        "text": "元の位置に戻る",
-                        "sceneId": "scene_normal"
-                    }
-                ]
+        "type": "equirectangular",
+        "panorama": "68.jpg", // 水が流れている画像
+        "autoLoad": true,
+        "compass": false,
+        "hotSpots": [
+            {
+                "pitch": -10,  
+                "yaw": 200,    // 水道の位置（200）に設定
+                "cssClass": "bulb-icon", // 電球アイコン（bulb.png）を表示
+                "clickHandlerFunc": showQuiz // クリック時にクイズを表示
             }
-        }
+        ]
     });
+
+    // ▼ クイズの動作プログラム ▼
+    function showQuiz(event, args) {
+        document.getElementById("quiz-modal").style.display = "block";
+        document.getElementById("quiz-choices").style.display = "block";
+        document.getElementById("quiz-result").style.display = "none";
+    }
+
+    function checkAnswer(answer) {
+        document.getElementById("quiz-choices").style.display = "none";
+        const resultDiv = document.getElementById("quiz-result");
+        resultDiv.style.display = "block";
+
+        if(answer === 3) {
+            resultDiv.innerHTML = "<strong style='color:#d32f2f; font-size:18px;'>正解！⭕</strong><br><br><b>【解説】</b><br>正解は「③ 洗濯の時にお風呂の残り湯を利用する」です！<br><br>環境省のデコ活データによると、それぞれの1回あたりのCO2削減量は以下の通りです。<br>・① 手洗いの水を止める：約0.002 kg-CO2e[cite: 1]<br>・② 洗顔の水を止める：約0.0021 kg-CO2e[cite: 1]<br>・<b>③ 洗濯に残り湯を使う：約0.017 kg-CO2e</b>[cite: 1]<br><br>洗濯に残り湯を利用すると、1回に使う新しい水道水の量を数十リットル単位で大きく減らせるため、手洗いや洗顔の節水よりもさらに大きな効果が得られます！[cite: 1]<br>もちろん、①や②の毎日のこまめな節水も大切なエコアクションです。";
+        } else {
+            resultDiv.innerHTML = "<strong style='color:#1976d2; font-size:18px;'>残念！❌</strong><br><br><b>【正解】</b><br>最も効果が高いのは<b>「③ 洗濯の時に水道水ではなくお風呂の残り湯を利用する」</b>です。<br><br><b>【解説】</b><br>環境省のデコ活データによると、それぞれの1回あたりのCO2削減量は以下の通りです。<br>・① 手洗いの水を止める：約0.002 kg-CO2e[cite: 1]<br>・② 洗顔の水を止める：約0.0021 kg-CO2e[cite: 1]<br>・<b>③ 洗濯に残り湯を使う：約0.017 kg-CO2e</b>[cite: 1]<br><br>洗濯に残り湯を利用すると、1回に使う新しい水道水の量を数十リットル単位で大きく減らせるため、手洗いや洗顔の節水よりもさらに大きな効果が得られます！[cite: 1]<br>もちろん、①や②の毎日のこまめな節水も大切なエコアクションです。";
+        }
+    }
+
+    function closeQuiz() {
+        document.getElementById("quiz-modal").style.display = "none";
+    }
 </script>
 
 </body>
