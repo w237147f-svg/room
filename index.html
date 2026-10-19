@@ -76,14 +76,10 @@
 
 <!-- クイズのポップアップ画面 -->
 <div id="quiz-modal">
-    <h3>💧 ゼミ室の水道エコアクションクイズ！</h3>
-    <p>ゼミ室で手洗いやコップ洗いをするとき、最も脱炭素（CO2削減）につながる適切な行動はどれでしょう？</p>
+    <h3 id="quiz-title">🌱 脱炭素クイズ！</h3>
+    <p id="quiz-question"></p>
     
-    <div id="quiz-choices">
-        <button class="quiz-btn" onclick="checkAnswer(1)">① 水量を細く弱めにして、手洗増や洗い物の間もずっと流しっぱなしにする</button>
-        <button class="quiz-btn" onclick="checkAnswer(2)">② 石けんをつける間やスポンジでこする間（30秒間）はこまめに水を止める</button>
-        <button class="quiz-btn" onclick="checkAnswer(3)">③ 水量を強めにして、短時間で一気に流して終わらせる</button>
-    </div>
+    <div id="quiz-choices"></div>
 
     <div id="quiz-result" style="display:none; margin-top:15px; font-size: 14px; line-height: 1.6;"></div>
     
@@ -109,6 +105,13 @@
                         "type": "scene",
                         "text": "水道を見る（流す）",
                         "sceneId": "scene_water"
+                    },
+                    {
+                        "pitch": 25,
+                        "yaw": 55,    // エアコンへの移動スポット（右上の天井付近）
+                        "type": "scene",
+                        "text": "エアコンを見る（使う）",
+                        "sceneId": "scene_aircon"
                     }
                 ]
             },
@@ -118,10 +121,30 @@
                 "panorama": "68.jpg",
                 "hotSpots": [
                     {
-                        "pitch": -25,  // 下へ移動（-10 → -25）
-                        "yaw": 220,    // 右へ移動（200 → 220）
+                        "pitch": -25,
+                        "yaw": 220,
                         "cssClass": "bulb-icon",
-                        "clickHandlerFunc": showQuiz // クリックでクイズ表示
+                        "clickHandlerFunc": showWaterQuiz
+                    },
+                    {
+                        "pitch": 0,
+                        "yaw": 0,
+                        "type": "scene",
+                        "text": "元の位置に戻る",
+                        "sceneId": "scene_normal"
+                    }
+                ]
+            },
+            // シーン3：エアコンが稼働しているゼミ室（70.jpg）
+            "scene_aircon": {
+                "type": "equirectangular",
+                "panorama": "70.jpg",
+                "hotSpots": [
+                    {
+                        "pitch": 25,
+                        "yaw": 55,    // 天井エアコンの位置
+                        "cssClass": "bulb-icon",
+                        "clickHandlerFunc": showAirconQuiz
                     },
                     {
                         "pitch": 0,
@@ -135,8 +158,39 @@
         }
     });
 
-    // ▼ クイズ用関数 ▼
-    function showQuiz(event, args) {
+    let currentQuizType = "";
+
+    // ▼ 水道クイズの表示 ▼
+    function showWaterQuiz() {
+        currentQuizType = "water";
+        document.getElementById("quiz-title").innerText = "💧 水道エコアクションクイズ！";
+        document.getElementById("quiz-question").innerText = "ゼミ室で手洗いやコップ洗いをするとき、最も脱炭素（CO2削減）につながる適切な行動はどれでしょう？";
+        
+        document.getElementById("quiz-choices").innerHTML = `
+            <button class="quiz-btn" onclick="checkAnswer(1)">① 水量を細く弱めにして、洗い物の間もずっと流しっぱなしにする</button>
+            <button class="quiz-btn" onclick="checkAnswer(2)">② 石けんをつける間やスポンジでこする間（30秒間）はこまめに水を止める</button>
+            <button class="quiz-btn" onclick="checkAnswer(3)">③ 水量を強めにして、短時間で一気に流して終わらせる</button>
+        `;
+        
+        openModal();
+    }
+
+    // ▼ エアコンクイズの表示 ▼
+    function showAirconQuiz() {
+        currentQuizType = "aircon";
+        document.getElementById("quiz-title").innerText = "❄️ エアコンエコアクションクイズ！";
+        document.getElementById("quiz-question").innerText = "ゼミ室でエアコン（冷暖房）を使用するとき、最も脱炭素（CO2削減）につながる効果的な使い方はどれでしょう？";
+        
+        document.getElementById("quiz-choices").innerHTML = `
+            <button class="quiz-btn" onclick="checkAnswer(1)">① 夏は室温28℃、冬は室温20℃を目安に適正温度に設定する</button>
+            <button class="quiz-btn" onclick="checkAnswer(2)">② すぐに部屋を冷やそう（温めよう）と設定温度を極端にして風量を強にする</button>
+            <button class="quiz-btn" onclick="checkAnswer(3)">③ 節電のため、30分ごとにこまめに電源のON/OFFを繰り返す</button>
+        `;
+        
+        openModal();
+    }
+
+    function openModal() {
         document.getElementById("quiz-modal").style.display = "block";
         document.getElementById("quiz-choices").style.display = "block";
         document.getElementById("quiz-result").style.display = "none";
@@ -147,10 +201,18 @@
         const resultDiv = document.getElementById("quiz-result");
         resultDiv.style.display = "block";
 
-        if(answer === 2) {
-            resultDiv.innerHTML = "<strong style='color:#d32f2f; font-size:18px;'>正解！⭕</strong><br><br><b>【解説】</b><br>正解は「② こまめに水を止める」です！<br><br>手洗いやコップ洗いの際、30秒間水を止めるだけで1回あたり<b>約0.002 kg-CO2e</b>の温室効果ガス削減効果があります[cite: 1]。<br><br>水道水を送ったりきれいに処理したりする浄水場・下水処理場では、多くの電力やエネルギーが使われています。水量を弱くしても流しっぱなしにすると消費量が増えるため、使わない瞬間に「こまめに蛇口を止める」ことが最も効果的な脱炭素アクションです！[cite: 1]";
-        } else {
-            resultDiv.innerHTML = "<strong style='color:#1976d2; font-size:18px;'>残念！❌</strong><br><br><b>【正解】</b><br>正解は<b>「② 石けんをつける間やスポンジでこする間（30秒間）はこまめに水を止める」</b>です。<br><br><b>【解説】</b><br>手洗いやコップ洗いの際、30秒間水を止めるだけで1回あたり<b>約0.002 kg-CO2e</b>の温室効果ガス削減効果があります[cite: 1]。<br><br>水道水を送ったりきれいに処理したりする浄水場・下水処理場では、多くの電力やエネルギーが使われています。水量を弱くしても流しっぱなしにすると消費量が増えるため、使わない瞬間に「こまめに蛇口を止める」ことが最も効果的な脱炭素アクションです！[cite: 1]";
+        if (currentQuizType === "water") {
+            if (answer === 2) {
+                resultDiv.innerHTML = "<strong style='color:#d32f2f; font-size:18px;'>正解！⭕</strong><br><br><b>【解説】</b><br>正解は「② こまめに水を止める」です！<br><br>30秒間水を止めるだけで1回あたり<b>約0.002 kg-CO2e</b>の削減効果があります。水道水を送ったり綺麗にする浄水場・下水処理場では多くの電気が使われているため、使わない瞬間に「こまめに蛇口を止める」ことが重要です！";
+            } else {
+                resultDiv.innerHTML = "<strong style='color:#1976d2; font-size:18px;'>残念！❌</strong><br><br><b>【正解】</b><br>正解は<b>「② 石けんをつける間やスポンジでこする間（30秒間）はこまめに水を止める」</b>です。<br><br><b>【解説】</b><br>30秒間水を止めるだけで1回あたり<b>約0.002 kg-CO2e</b>の削減効果があります。使わない瞬間に「こまめに蛇口を止める」ことが最も効果的です！";
+            }
+        } else if (currentQuizType === "aircon") {
+            if (answer === 1) {
+                resultDiv.innerHTML = "<strong style='color:#d32f2f; font-size:18px;'>正解！⭕</strong><br><br><b>【解説】</b><br>正解は「① 適正温度（夏28℃/冬20℃）に設定する」です！<br><br>エアコンの設定温度を無理のない範囲で調整する（冷房を1℃高く・暖房を1℃低く設定する）だけで、年間で約<b>30kg-CO2</b>（電気約60kWh分）もの削減効果があります！<br>なお、頻繁なON/OFFは起動時の消費電力が増えて逆効果になるため、自動運転などで効率よく室温を保つのがコツです。";
+            } else {
+                resultDiv.innerHTML = "<strong style='color:#1976d2; font-size:18px;'>残念！❌</strong><br><br><b>【正解】</b><br>正解は<b>「① 夏は室温28℃、冬は室温20℃を目安に適正温度に設定する」</b>です。<br><br><b>【解説】</b><br>設定温度を調整する（冷房を1℃高く・暖房を1℃低くする）だけで、年間約<b>30kg-CO2</b>の大きな削減効果が得られます！頻繁な電源のON/OFFは起動電力が増えるため避けましょう。";
+            }
         }
     }
 
