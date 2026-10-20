@@ -112,6 +112,13 @@
                         "type": "scene",
                         "text": "エアコンを見る（使う）",
                         "sceneId": "scene_aircon"
+                    },
+                    {
+                        "pitch": -2,
+                        "yaw": 85,    // テレビ・モニターへの移動スポット（75.jpgへ）
+                        "type": "scene",
+                        "text": "テレビ・モニターエリアへ",
+                        "sceneId": "scene_tv"
                     }
                 ]
             },
@@ -127,6 +134,13 @@
                         "clickHandlerFunc": showWaterQuiz
                     },
                     {
+                        "pitch": -5,
+                        "yaw": 60,   // 水道からテレビ（75.jpg）への移動スポット
+                        "type": "scene",
+                        "text": "テレビ・モニターを見る（75.jpg）",
+                        "sceneId": "scene_tv"
+                    },
+                    {
                         "pitch": 0,
                         "yaw": 0,
                         "type": "scene",
@@ -135,7 +149,34 @@
                     }
                 ]
             },
-            // シーン3：エアコンが稼働しているゼミ室（70.jpg）
+            // シーン3：テレビ・モニター稼働（75.jpg）★追加★
+            "scene_tv": {
+                "type": "equirectangular",
+                "panorama": "75.jpg",
+                "hotSpots": [
+                    {
+                        "pitch": -3,
+                        "yaw": 55,    // 右側テレビ画面上の電球アイコン
+                        "cssClass": "bulb-icon",
+                        "clickHandlerFunc": showTvQuiz
+                    },
+                    {
+                        "pitch": 0,
+                        "yaw": -90,
+                        "type": "scene",
+                        "text": "水道を見る（流す）",
+                        "sceneId": "scene_water"
+                    },
+                    {
+                        "pitch": 0,
+                        "yaw": -180,
+                        "type": "scene",
+                        "text": "元の位置に戻る",
+                        "sceneId": "scene_normal"
+                    }
+                ]
+            },
+            // シーン4：エアコンが稼働しているゼミ室（70.jpg）
             "scene_aircon": {
                 "type": "equirectangular",
                 "panorama": "70.jpg",
@@ -162,7 +203,7 @@
                     }
                 ]
             },
-            // シーン4：デスク・資料スペース（72.jpg）
+            // シーン5：デスク・資料スペース（72.jpg）
             "scene_paper": {
                 "type": "equirectangular",
                 "panorama": "72.jpg",
@@ -201,7 +242,21 @@
         openModal();
     }
 
-    // ▼ 2. エアコンクイズ ▼
+    // ▼ 2. テレビ・モニタークイズ（追加） ▼
+    function showTvQuiz() {
+        currentQuizType = "tv";
+        document.getElementById("quiz-title").innerText = "📺 テレビ・モニターエコアクションクイズ！";
+        document.getElementById("quiz-question").innerText = "ゼミ室で大型モニターを使って発表や作業をした後、最も脱炭素（CO2削減）につながる適切な行動はどれでしょう？";
+        
+        document.getElementById("quiz-choices").innerHTML = `
+            <button class="quiz-btn" onclick="checkAnswer(1)">① 使わない時はこまめに画面をスリープモードにする（輝度を適正に調整する）</button>
+            <button class="quiz-btn" onclick="checkAnswer(2)">② 画面の焼き付きを防ぐため、点灯させたまま放置する</button>
+            <button class="quiz-btn" onclick="checkAnswer(3)">③ スリープモードに設定せず、最高輝度のままにしておく</button>
+        `;
+        openModal();
+    }
+
+    // ▼ 3. エアコンクイズ ▼
     function showAirconQuiz() {
         currentQuizType = "aircon";
         document.getElementById("quiz-title").innerText = "❄️ エアコンエコアクションクイズ！";
@@ -215,7 +270,7 @@
         openModal();
     }
 
-    // ▼ 3. 紙・ペーパーレスクイズ ▼
+    // ▼ 4. 紙・ペーパーレスクイズ ▼
     function showPaperQuiz() {
         currentQuizType = "paper";
         document.getElementById("quiz-title").innerText = "📄 紙・ペーパーレスエコアクションクイズ！";
@@ -246,6 +301,12 @@
             } else {
                 resultDiv.innerHTML = "<strong style='color:#1976d2; font-size:18px;'>残念！❌</strong><br><br><b>【正解】</b><br>正解は<b>「② 石けんをつける間やスポンジでこする間（30秒間）はこまめに水を止める」</b>です。<br><br><b>【解説】</b><br>30秒間水を止めるだけで1回あたり<b>約0.002 kg-CO2e</b>の削減効果があります[cite: 1]。使わない瞬間に「こまめに蛇口を止める」ことが最も効果的です！[cite: 1]";
             }
+        } else if (currentQuizType === "tv") {
+            if (answer === 1) {
+                resultDiv.innerHTML = "<strong style='color:#d32f2f; font-size:18px;'>正解！⭕</strong><br><br><b>【解説】</b><br>正解は「① 使わない時はこまめに画面をスリープモードにする」です！<br><br>環境省のデコ活データベースによると、モニターやPCの輝度（明るさ）を適正に調整したり、不使用時に自動スリープ（待機電力約0.5W）へ移行させることで、<b>消費電力を約20%削減（1日あたり約0.084 kg-CO2e削減）</b>できます[cite: 1]！ゼミでの作業や発表が終わったら、こまめに画面をスリープ・消灯しましょう！[cite: 1]";
+            } else {
+                resultDiv.innerHTML = "<strong style='color:#1976d2; font-size:18px;'>残念！❌</strong><br><br><b>【正解】</b><br>正解は<b>「① 使わない時はこまめに画面をスリープモードにする（輝度を適正に調整する）」</b>です。<br><br><b>【解説】</b><br>環境省のデコ活データベースによると、スリープモードの活用や適正な輝度調整により、消費電力を<b>約20%削減（1日あたり約0.084 kg-CO2e削減）</b>できます[cite: 1]！使わない時間はこまめにスリープ・消灯することを習慣にしましょう！[cite: 1]";
+            }
         } else if (currentQuizType === "aircon") {
             if (answer === 1) {
                 resultDiv.innerHTML = "<strong style='color:#d32f2f; font-size:18px;'>正解！⭕</strong><br><br><b>【解説】</b><br>正解は「① 適正温度（夏28℃/冬20℃）に設定する」です！<br><br>エアコンの設定温度を無理のない範囲で調整する（冷房を1℃高く・暖房を1℃低く設定する）だけで、年間で約<b>30kg-CO2</b>もの削減効果があります！頻繁なON/OFFは起動時の消費電力が増えるため避けましょう。";
@@ -254,7 +315,7 @@
             }
         } else if (currentQuizType === "paper") {
             if (answer === 3) {
-                resultDiv.innerHTML = "<strong style='color:#d32f2f; font-size:18px;'>正解！⭕</strong><br><br><b>【解説】</b><br>正解は「③ 紙に印刷せず、PCやタブレットで共有する（ペーパーレス化）」です！<br><br>環境省のデコ活データベースによると、それぞれのCO2削減効果は以下の通りです：<br>・① 両面印刷にする：約 <b>0.009 kg-CO2e</b> / 部[cite: 1]<br>・② 4ページを1枚に集約印刷：約 <b>0.028 kg-CO2e</b> / 部[cite: 1]<br>・<b>③ 電子化・ペーパーレス化：約 0.042 kg-CO2e / 回</b>[cite: 1]<br><br>紙の製造や輸送、印刷時のトナー・電力消費をまるごと削減できる「ペーパーレス化」が最も効果的です！[cite: 1] 印刷が必要な場合でも、集約印刷や両面印刷を組み合わせることで大きな節約になります[cite: 1]。";
+                resultDiv.innerHTML = "<strong style='color:#d32f2f; font-size:18px;'>正解！⭕</strong><br><br><b>【解説】</b><br>正解は「③ 紙に印刷せず、PCやタブレットで共有する（ペーパーレス化）」です！<br><br>環境省のデコ活データベースによると、それぞれのCO2削減効果は以下の通りです：<br>・① 両面印刷にする：約 <b>0.009 kg-CO2e</b> / 部[cite: 1]<br>・② 4ページを1枚に集約印刷：約 <b>0.028 kg-CO2e</b> / 部[cite: 1]<br>・<b>③ 電子化・ペーパーレス化：約 0.042 kg-CO2e / 回</b>[cite: 1]<br><br>紙の製造や輸送、印刷時のトナー・電力消費をまるごと削減できる「ペーパーレス化」が最も効果的です！[cite: 1] 印刷が必要な場合でも、集約印刷や両面印刷を組み合わせることで大きな節減になります[cite: 1]。";
             } else {
                 resultDiv.innerHTML = "<strong style='color:#1976d2; font-size:18px;'>残念！❌</strong><br><br><b>【正解】</b><br>正解は<b>「③ 紙に印刷せず、PCやタブレットでデータを共有・閲覧する（ペーパーレス化）」</b>です。<br><br><b>【解説】</b><br>環境省のデコ活データベースによると、それぞれのCO2削減効果は以下の通りです：<br>・① 両面印刷にする：約 <b>0.009 kg-CO2e</b> / 部[cite: 1]<br>・② 4ページを1枚に集約印刷：約 <b>0.028 kg-CO2e</b> / 部[cite: 1]<br>・<b>③ 電子化・ペーパーレス化：約 0.042 kg-CO2e / 回</b>[cite: 1]<br><br>紙の製造や印刷にかかるエネルギーをゼロにできる「ペーパーレス化」が最も高い脱炭素効果を持っています！[cite: 1]";
             }
